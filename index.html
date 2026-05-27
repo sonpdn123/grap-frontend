@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quan Ly Thu Nhap Grab</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Thu Nhap Mua He</h1>
+        
+        <div class="calendar-controls">
+            <button id="prevMonth">Thang Truoc</button>
+            <h2 id="monthYearDisplay"></h2>
+            <button id="nextMonth">Thang Sau</button>
+        </div>
+
+        <div class="calendar-header">
+            <div>CN</div><div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div>
+        </div>
+        
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <div id="dataModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">X</span>
+            <h2 id="modalDateTitle"></h2>
+            <form id="incomeForm">
+                <input type="hidden" id="selectedDate">
+                
+                <div class="form-group">
+                    <label for="grabIncome">Tien tu app Grab:</label>
+                    <input type="number" id="grabIncome" value="0" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="outsideIncome">Tien cuoc ngoai:</label>
+                    <input type="number" id="outsideIncome" value="0" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipIncome">Tien bo:</label>
+                    <input type="number" id="tipIncome" value="0" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gasExpense">Tien xang:</label>
+                    <input type="number" id="gasExpense" value="0" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="foodExpense">Tien an, uong:</label>
+                    <input type="number" id="foodExpense" value="0" min="0">
+                </div>
+                
+                <div class="result-box">
+                    <strong>Tong thu nhap: </strong> <span id="dailyTotal">0</span>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" id="saveBtn">Luu Thong Tin</button>
+                    <button type="button" id="deleteBtn" class="danger">Xoa Thong Tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
