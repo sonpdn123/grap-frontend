@@ -13,7 +13,8 @@ const inputs = {
     outside: document.getElementById('outsideIncome'),
     tip: document.getElementById('tipIncome'),
     gas: document.getElementById('gasExpense'),
-    food: document.getElementById('foodExpense')
+    food: document.getElementById('foodExpense'),
+    haoMon: document.getElementById('haoMonExpense')
 };
 
 let currentDate = new Date();
@@ -53,6 +54,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     let monthlyTotal = 0;
     let monthlyGas = 0;
     let monthlyFood = 0;
+    let monthlyHaoMon = 0;
     const currentMonthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
 
     for (let i = 0; i < firstDay; i++) {
@@ -79,8 +81,9 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
 
             if (dateString.startsWith(currentMonthPrefix)) {
                 monthlyTotal += db[dateString].total;
-                monthlyGas += db[dateString].gas;
-                monthlyFood += db[dateString].food;
+                monthlyGas += (db[dateString].gas || 0);
+                monthlyFood += (db[dateString].food || 0);
+                monthlyHaoMon += (db[dateString].hao_mon || 0);
             }
         }
 
@@ -94,7 +97,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
-        monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span>`;
+        monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span>`;
     }
 }
 
@@ -122,14 +125,15 @@ function calculateTotal() {
     const tip = Number(inputs.tip.value) || 0;
     const gas = Number(inputs.gas.value) || 0;
     const food = Number(inputs.food.value) || 0;
+    const haoMon = Number(inputs.haoMon.value) || 0;
 
-    const expense = gas + food;
+    const expense = gas + food + haoMon;
     const total = (grab + tip + outside) - expense;
     
     dailyTotalDisplay.textContent = total.toLocaleString('vi-VN'); 
     
     if (dailyExpenseDisplay) {
-        dailyExpenseDisplay.innerHTML = `Tiền xăng: ${gas.toLocaleString('vi-VN')} VND <br> Tiền ăn: ${food.toLocaleString('vi-VN')} VND`;
+        dailyExpenseDisplay.innerHTML = `Tiền xăng: ${gas.toLocaleString('vi-VN')} VND <br> Tiền ăn: ${food.toLocaleString('vi-VN')} VND <br> Hao mòn xe: ${haoMon.toLocaleString('vi-VN')} VND`;
     }
     
     return total;
@@ -144,11 +148,12 @@ function openModal(dateString, existingData) {
     document.getElementById('selectedDate').value = dateString;
 
     if (existingData) {
-        inputs.grab.value = existingData.grab;
-        inputs.outside.value = existingData.outside;
-        inputs.tip.value = existingData.tip;
-        inputs.gas.value = existingData.gas;
-        inputs.food.value = existingData.food;
+        inputs.grab.value = existingData.grab || 0;
+        inputs.outside.value = existingData.outside || 0;
+        inputs.tip.value = existingData.tip || 0;
+        inputs.gas.value = existingData.gas || 0;
+        inputs.food.value = existingData.food || 0;
+        inputs.haoMon.value = existingData.hao_mon || 0;
     } else {
         form.reset();
         Object.values(inputs).forEach(input => input.value = 0);
@@ -172,6 +177,7 @@ form.addEventListener('submit', async function(e) {
     const tip = Number(inputs.tip.value) || 0;
     const gas = Number(inputs.gas.value) || 0;
     const food = Number(inputs.food.value) || 0;
+    const haoMon = Number(inputs.haoMon.value) || 0;
     
     const requestData = {
         record_date: dateString,
@@ -180,6 +186,7 @@ form.addEventListener('submit', async function(e) {
         tip: tip,
         gas: gas,
         food: food,
+        hao_mon: haoMon,
         total: total
     };
     
