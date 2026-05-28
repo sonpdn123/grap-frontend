@@ -211,7 +211,7 @@ button.danger {
     text-align: center;
     font-size: 18px;
     font-weight: bold;
-    color: #b71c1c;
+    color: #06d8f4;
     background-color: #ffebee;
     padding: 15px;
     margin-top: 20px;
@@ -227,5 +227,5 @@ button.danger {
     }
 }
 .money-highlight{
-    color : blue;
+    color : rgb(255, 0, 0);
 }
