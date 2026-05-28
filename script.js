@@ -4,6 +4,7 @@ const modal = document.getElementById('dataModal');
 const closeModal = document.getElementById('closeModal');
 const form = document.getElementById('incomeForm');
 const dailyTotalDisplay = document.getElementById('dailyTotal');
+const monthlyTotalDisplay = document.getElementById('monthlyTotalDisplay');
 
 const inputs = {
     grab: document.getElementById('grabIncome'),
@@ -15,42 +16,38 @@ const inputs = {
 
 let currentDate = new Date();
 
-// BƯỚC THAY LINK: Hãy thay đường dẫn dưới đây bằng link thật Render cấp cho bạn
 const API_URL = 'https://thongke-vkkp.onrender.com';
 
-// LUỒNG LOGIC MỚI: Lấy dữ liệu từ Database thông qua Server Render
-async function getDatabase() {
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+}
+
+async function getDatabaseFromServer() {
     try {
         const response = await fetch(`${API_URL}/api/income`);
         const data = await response.json();
         
-        // Chuyển đổi mảng từ database trả về dạng Object { '2026-05-27': {...} } 
-        // để giữ nguyên cấu trúc logic xử lý lịch ở phía dưới mà không cần sửa code hiển thị
         const db = {};
         data.forEach(item => {
             db[item.record_date] = item;
         });
+        
+        localStorage.setItem('grab_cache_db', JSON.stringify(db));
         return db;
     } catch (error) {
         console.error("Loi khi lay du lieu tu Render:", error);
-        return {};
+        return null;
     }
 }
 
-// Thêm từ khóa async vì hàm này phải đợi hàm getDatabase() chạy xong
-async function renderCalendar(date) {
+function getDatabaseFromCache() {
+    const cache = localStorage.getItem('grab_cache_db');
+    return cache ? JSON.parse(cache) : {};
+}
+
+function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     calendarGrid.innerHTML = '';
     
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    
-    monthYearDisplay.textContent = `Tháng ${month + 1} - ${year}`;
-    
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    const db = await getDatabase();
-
     let monthlyTotal = 0;
     const currentMonthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
 
@@ -72,7 +69,6 @@ async function renderCalendar(date) {
             const incomeDiv = document.createElement('div');
             incomeDiv.className = 'day-income';
             
-            // Vi tri 1: Them 'vi-VN' cho so tien tren tung o lich
             incomeDiv.textContent = db[dateString].total.toLocaleString('vi-VN');
             
             dayCell.appendChild(incomeDiv);
@@ -89,8 +85,25 @@ async function renderCalendar(date) {
         calendarGrid.appendChild(dayCell);
     }
 
-    // Vi tri 2: Them 'vi-VN' cho dong tong thu nhap ca thang
     monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
+}
+
+async function renderCalendar(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    
+    monthYearDisplay.textContent = `Tháng ${month + 1} - ${year}`;
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    const cachedDb = getDatabaseFromCache();
+    drawCalendarCells(cachedDb, year, month, daysInMonth, firstDay);
+    
+    const freshDb = await getDatabaseFromServer();
+    if (freshDb) {
+        drawCalendarCells(freshDb, year, month, daysInMonth, firstDay);
+    }
 }
 
 function calculateTotal() {
@@ -101,8 +114,7 @@ function calculateTotal() {
     const food = Number(inputs.food.value) || 0;
 
     const total = (grab + tip + outside) - (gas + food);
-    // Them 'vi-VN' vao trong ngoac
-    dailyTotalDisplay.textContent = total.toLocaleString('vi-VN')  ; 
+    dailyTotalDisplay.textContent = total.toLocaleString('vi-VN'); 
     return total;
 }
 
@@ -133,7 +145,6 @@ closeModal.addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
-
 form.addEventListener('submit', async function(e) {
     e.preventDefault(); 
     
@@ -151,7 +162,6 @@ form.addEventListener('submit', async function(e) {
     };
     
     try {
-        // Gửi dữ liệu lên API Render
         await fetch(`${API_URL}/api/income`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -165,12 +175,10 @@ form.addEventListener('submit', async function(e) {
     renderCalendar(currentDate); 
 });
 
-// LUỒNG LOGIC MỚI: Xóa dữ liệu khỏi Database thông qua phương thức DELETE
 document.getElementById('deleteBtn').addEventListener('click', async function() {
     const dateString = document.getElementById('selectedDate').value;
     
     try {
-        // Gửi yêu cầu xóa tới đúng endpoint của ngày đã chọn
         await fetch(`${API_URL}/api/income/${dateString}`, {
             method: 'DELETE'
         });
@@ -191,6 +199,5 @@ document.getElementById('nextMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
     renderCalendar(currentDate);
 });
-const monthlyTotalDisplay = document.getElementById('monthlyTotalDisplay');
-// Kích hoạt vẽ lịch lần đầu tiên khi tải trang
+
 renderCalendar(currentDate);
