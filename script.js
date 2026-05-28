@@ -49,8 +49,10 @@ async function renderCalendar(date) {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    // Đợi lấy dữ liệu từ server xong mới vẽ lịch
     const db = await getDatabase();
+
+    let monthlyTotal = 0;
+    const currentMonthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
 
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
@@ -69,8 +71,15 @@ async function renderCalendar(date) {
             dayCell.classList.add('has-data');
             const incomeDiv = document.createElement('div');
             incomeDiv.className = 'day-income';
-            incomeDiv.textContent = db[dateString].total.toLocaleString() + ' VND';
+            
+            // Vi tri 1: Them 'vi-VN' cho so tien tren tung o lich
+            incomeDiv.textContent = db[dateString].total.toLocaleString('vi-VN') + ' VND';
+            
             dayCell.appendChild(incomeDiv);
+
+            if (dateString.startsWith(currentMonthPrefix)) {
+                monthlyTotal += db[dateString].total;
+            }
         }
 
         dayCell.addEventListener('click', function() {
@@ -79,6 +88,9 @@ async function renderCalendar(date) {
 
         calendarGrid.appendChild(dayCell);
     }
+
+    // Vi tri 2: Them 'vi-VN' cho dong tong thu nhap ca thang
+    monthlyTotalDisplay.textContent = `Tong thu nhap thang ${month + 1}: ${monthlyTotal.toLocaleString('vi-VN')} VND`;
 }
 
 function calculateTotal() {
@@ -89,7 +101,8 @@ function calculateTotal() {
     const food = Number(inputs.food.value) || 0;
 
     const total = (grab + tip + outside) - (gas + food);
-    dailyTotalDisplay.textContent = total.toLocaleString() + ' VND';
+    // Them 'vi-VN' vao trong ngoac
+    dailyTotalDisplay.textContent = total.toLocaleString('vi-VN')  ; 
     return total;
 }
 
@@ -178,6 +191,6 @@ document.getElementById('nextMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
     renderCalendar(currentDate);
 });
-
+const monthlyTotalDisplay = document.getElementById('monthlyTotalDisplay');
 // Kích hoạt vẽ lịch lần đầu tiên khi tải trang
 renderCalendar(currentDate);

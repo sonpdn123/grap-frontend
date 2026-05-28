@@ -207,3 +207,22 @@ button.danger {
         font-size: 14px;
     }
 }
+.monthly-total {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #b71c1c;
+    background-color: #ffebee;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+    border: 1px solid #ffcdd2;
+}
+
+@media (max-width: 400px) {
+    .monthly-total {
+        font-size: 16px;
+        padding: 12px;
+        margin-top: 15px;
+    }
+}
