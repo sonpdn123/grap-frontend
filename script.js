@@ -90,7 +90,7 @@ async function renderCalendar(date) {
     }
 
     // Vi tri 2: Them 'vi-VN' cho dong tong thu nhap ca thang
-    monthlyTotalDisplay.textContent = `Tổng thu nhập tháng ${month + 1}: ${monthlyTotal.toLocaleString('vi-VN')} VND`;
+    monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
 }
 
 function calculateTotal() {
