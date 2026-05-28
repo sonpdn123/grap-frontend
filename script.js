@@ -51,7 +51,8 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     calendarGrid.innerHTML = '';
     
     let monthlyTotal = 0;
-    let monthlyExpense = 0;
+    let monthlyGas = 0;
+    let monthlyFood = 0;
     const currentMonthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
 
     for (let i = 0; i < firstDay; i++) {
@@ -78,7 +79,8 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
 
             if (dateString.startsWith(currentMonthPrefix)) {
                 monthlyTotal += db[dateString].total;
-                monthlyExpense += (db[dateString].gas + db[dateString].food);
+                monthlyGas += db[dateString].gas;
+                monthlyFood += db[dateString].food;
             }
         }
 
@@ -92,7 +94,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
-        monthlyExpenseDisplay.innerHTML = `Tổng chi phí tháng ${month + 1}: <span class="expense-highlight">${monthlyExpense.toLocaleString('vi-VN')} VND</span>`;
+        monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span>`;
     }
 }
 
@@ -127,7 +129,7 @@ function calculateTotal() {
     dailyTotalDisplay.textContent = total.toLocaleString('vi-VN'); 
     
     if (dailyExpenseDisplay) {
-        dailyExpenseDisplay.textContent = `Tiền ăn & xăng: ${expense.toLocaleString('vi-VN')} VND`;
+        dailyExpenseDisplay.innerHTML = `Tiền xăng: ${gas.toLocaleString('vi-VN')} VND <br> Tiền ăn: ${food.toLocaleString('vi-VN')} VND`;
     }
     
     return total;
