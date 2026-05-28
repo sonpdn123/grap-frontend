@@ -229,3 +229,26 @@ button.danger {
 .money-highlight{
     color : rgb(255, 0, 0);
 }
+.daily-expense-box {
+    background-color: #fff3cd;
+    color: #856404;
+    margin-top: 5px;
+    font-size: 15px;
+}
+
+.monthly-expense {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ffeeba;
+}
+
+.expense-highlight {
+    color: #dc3545;
+    font-weight: bold;
+}

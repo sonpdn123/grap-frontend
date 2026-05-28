@@ -5,6 +5,8 @@ const closeModal = document.getElementById('closeModal');
 const form = document.getElementById('incomeForm');
 const dailyTotalDisplay = document.getElementById('dailyTotal');
 const monthlyTotalDisplay = document.getElementById('monthlyTotalDisplay');
+const dailyExpenseDisplay = document.getElementById('dailyExpense');
+const monthlyExpenseDisplay = document.getElementById('monthlyExpenseDisplay');
 
 const inputs = {
     grab: document.getElementById('grabIncome'),
@@ -35,7 +37,7 @@ async function getDatabaseFromServer() {
         localStorage.setItem('grab_cache_db', JSON.stringify(db));
         return db;
     } catch (error) {
-        console.error("Loi khi lay du lieu tu Render:", error);
+        console.error("Loi khi lay du lieu:", error);
         return null;
     }
 }
@@ -49,6 +51,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     calendarGrid.innerHTML = '';
     
     let monthlyTotal = 0;
+    let monthlyExpense = 0;
     const currentMonthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
 
     for (let i = 0; i < firstDay; i++) {
@@ -75,6 +78,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
 
             if (dateString.startsWith(currentMonthPrefix)) {
                 monthlyTotal += db[dateString].total;
+                monthlyExpense += (db[dateString].gas + db[dateString].food);
             }
         }
 
@@ -86,6 +90,10 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     }
 
     monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
+    
+    if (monthlyExpenseDisplay) {
+        monthlyExpenseDisplay.innerHTML = `Tổng chi phí tháng ${month + 1}: <span class="expense-highlight">${monthlyExpense.toLocaleString('vi-VN')} VND</span>`;
+    }
 }
 
 async function renderCalendar(date) {
@@ -113,8 +121,15 @@ function calculateTotal() {
     const gas = Number(inputs.gas.value) || 0;
     const food = Number(inputs.food.value) || 0;
 
-    const total = (grab + tip + outside) - (gas + food);
+    const expense = gas + food;
+    const total = (grab + tip + outside) - expense;
+    
     dailyTotalDisplay.textContent = total.toLocaleString('vi-VN'); 
+    
+    if (dailyExpenseDisplay) {
+        dailyExpenseDisplay.textContent = `Tiền ăn & xăng: ${expense.toLocaleString('vi-VN')} VND`;
+    }
+    
     return total;
 }
 
@@ -150,16 +165,28 @@ form.addEventListener('submit', async function(e) {
     
     const dateString = document.getElementById('selectedDate').value;
     const total = calculateTotal();
+    const grab = Number(inputs.grab.value) || 0;
+    const outside = Number(inputs.outside.value) || 0;
+    const tip = Number(inputs.tip.value) || 0;
+    const gas = Number(inputs.gas.value) || 0;
+    const food = Number(inputs.food.value) || 0;
     
     const requestData = {
         record_date: dateString,
-        grab: Number(inputs.grab.value),
-        outside: Number(inputs.outside.value),
-        tip: Number(inputs.tip.value),
-        gas: Number(inputs.gas.value),
-        food: Number(inputs.food.value),
+        grab: grab,
+        outside: outside,
+        tip: tip,
+        gas: gas,
+        food: food,
         total: total
     };
+    
+    const currentCache = getDatabaseFromCache();
+    currentCache[dateString] = requestData;
+    localStorage.setItem('grab_cache_db', JSON.stringify(currentCache));
+    
+    modal.style.display = 'none';
+    renderCalendar(currentDate); 
     
     try {
         await fetch(`${API_URL}/api/income`, {
@@ -167,27 +194,30 @@ form.addEventListener('submit', async function(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestData)
         });
+        getDatabaseFromServer(); 
     } catch (error) {
         console.error("Loi khi luu du lieu:", error);
     }
-    
-    modal.style.display = 'none';
-    renderCalendar(currentDate); 
 });
 
 document.getElementById('deleteBtn').addEventListener('click', async function() {
     const dateString = document.getElementById('selectedDate').value;
     
+    const currentCache = getDatabaseFromCache();
+    delete currentCache[dateString];
+    localStorage.setItem('grab_cache_db', JSON.stringify(currentCache));
+    
+    modal.style.display = 'none';
+    renderCalendar(currentDate); 
+
     try {
         await fetch(`${API_URL}/api/income/${dateString}`, {
             method: 'DELETE'
         });
+        getDatabaseFromServer();
     } catch (error) {
         console.error("Loi khi xoa du lieu:", error);
     }
-        
-    modal.style.display = 'none';
-    renderCalendar(currentDate); 
 });
 
 document.getElementById('prevMonth').addEventListener('click', () => {
