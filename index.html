@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quan Ly Thu Nhap Grab</title>
+    <title>Thu Nhap</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Thu Nhap Mua He</h1>
+        <h1>Thu nhập PS</h1>
         
         <div class="calendar-controls">
-            <button id="prevMonth">Thang Truoc</button>
+            <button id="prevMonth">Tháng trước</button>
             <h2 id="monthYearDisplay"></h2>
-            <button id="nextMonth">Thang Sau</button>
+            <button id="nextMonth">Tháng sau</button>
         </div>
 
         <div class="calendar-header">
@@ -31,37 +31,37 @@
                 <input type="hidden" id="selectedDate">
                 
                 <div class="form-group">
-                    <label for="grabIncome">Tien tu app Grab:</label>
+                    <label for="grabIncome">Tiền từ app Grab:</label>
                     <input type="number" id="grabIncome" value="0" min="0">
                 </div>
                 
                 <div class="form-group">
-                    <label for="outsideIncome">Tien cuoc ngoai:</label>
+                    <label for="outsideIncome">Tiền từ cuộc ngoài:</label>
                     <input type="number" id="outsideIncome" value="0" min="0">
                 </div>
                 
                 <div class="form-group">
-                    <label for="tipIncome">Tien bo:</label>
+                    <label for="tipIncome">Tiền được bo:</label>
                     <input type="number" id="tipIncome" value="0" min="0">
                 </div>
                 
                 <div class="form-group">
-                    <label for="gasExpense">Tien xang:</label>
+                    <label for="gasExpense">Tiền xăng:</label>
                     <input type="number" id="gasExpense" value="0" min="0">
                 </div>
                 
                 <div class="form-group">
-                    <label for="foodExpense">Tien an, uong:</label>
+                    <label for="foodExpense">Tiền ăn, uống:</label>
                     <input type="number" id="foodExpense" value="0" min="0">
                 </div>
                 
                 <div class="result-box">
-                    <strong>Tong thu nhap: </strong> <span id="dailyTotal">0</span>
+                    <strong>Tổng thu nhập </strong> <span id="dailyTotal">0</span>
                 </div>
                 
                 <div class="action-buttons">
-                    <button type="submit" id="saveBtn">Luu Thong Tin</button>
-                    <button type="button" id="deleteBtn" class="danger">Xoa Thong Tin</button>
+                    <button type="submit" id="saveBtn">Lưu</button>
+                    <button type="button" id="deleteBtn" class="danger">XÓa</button>
                 </div>
             </form>
         </div>

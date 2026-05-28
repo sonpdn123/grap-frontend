@@ -44,7 +44,7 @@ async function renderCalendar(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
     
-    monthYearDisplay.textContent = `Thang ${month + 1} - ${year}`;
+    monthYearDisplay.textContent = `Tháng ${month + 1} - ${year}`;
     
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -73,7 +73,7 @@ async function renderCalendar(date) {
             incomeDiv.className = 'day-income';
             
             // Vi tri 1: Them 'vi-VN' cho so tien tren tung o lich
-            incomeDiv.textContent = db[dateString].total.toLocaleString('vi-VN') + ' VND';
+            incomeDiv.textContent = db[dateString].total.toLocaleString('vi-VN');
             
             dayCell.appendChild(incomeDiv);
 
@@ -90,7 +90,7 @@ async function renderCalendar(date) {
     }
 
     // Vi tri 2: Them 'vi-VN' cho dong tong thu nhap ca thang
-    monthlyTotalDisplay.textContent = `Tong thu nhap thang ${month + 1}: ${monthlyTotal.toLocaleString('vi-VN')} VND`;
+    monthlyTotalDisplay.textContent = `Tổng thu nhập tháng ${month + 1}: ${monthlyTotal.toLocaleString('vi-VN')} VND`;
 }
 
 function calculateTotal() {
@@ -111,7 +111,7 @@ Object.values(inputs).forEach(input => {
 });
 
 function openModal(dateString, existingData) {
-    document.getElementById('modalDateTitle').textContent = `Nhap lieu ngay: ${dateString}`;
+    document.getElementById('modalDateTitle').textContent = `Nhập liệu ngày: ${dateString}`;
     document.getElementById('selectedDate').value = dateString;
 
     if (existingData) {
@@ -133,7 +133,7 @@ closeModal.addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
-// LUỒNG LOGIC MỚI: Thêm/Sửa dữ liệu lên Database thông qua phương thức POST
+
 form.addEventListener('submit', async function(e) {
     e.preventDefault(); 
     
