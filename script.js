@@ -27,7 +27,9 @@ if ('serviceWorker' in navigator) {
 
 async function getDatabaseFromServer() {
     try {
-        const response = await fetch(`${API_URL}/api/income`);
+        const response = await fetch(`${API_URL}/api/income`, {
+            cache: 'no-store'
+        });
         const data = await response.json();
         
         const db = {};
