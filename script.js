@@ -172,7 +172,7 @@ Object.values(inputs).forEach(input => {
 
 btnChinhSua.addEventListener('click', () => {
     if (currentActiveInput) {
-        currentActiveInput.value = Number(quickInput.value) || 0;
+        currentActiveInput.value = (Number(quickInput.value) || 0) * 1000;
         calculateTotal();
     }
     inputActionModal.style.display = 'none';
@@ -181,7 +181,7 @@ btnChinhSua.addEventListener('click', () => {
 btnCongThem.addEventListener('click', () => {
     if (currentActiveInput) {
         const currentVal = Number(currentActiveInput.value) || 0;
-        const addVal = Number(quickInput.value) || 0;
+        const addVal = (Number(quickInput.value) || 0) * 1000;
         currentActiveInput.value = currentVal + addVal;
         calculateTotal();
     }
