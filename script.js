@@ -5,7 +5,6 @@ const closeModal = document.getElementById('closeModal');
 const form = document.getElementById('incomeForm');
 const dailyTotalDisplay = document.getElementById('dailyTotal');
 const monthlyTotalDisplay = document.getElementById('monthlyTotalDisplay');
-const dailyExpenseDisplay = document.getElementById('dailyExpense');
 const monthlyExpenseDisplay = document.getElementById('monthlyExpenseDisplay');
 
 const inputActionModal = document.getElementById('inputActionModal');
@@ -156,10 +155,6 @@ function calculateTotal() {
     const total = (grab + tip + outside) - expense;
     
     dailyTotalDisplay.textContent = total.toLocaleString('vi-VN'); 
-    
-    if (dailyExpenseDisplay) {
-        dailyExpenseDisplay.innerHTML = `Tiền xăng: ${gas.toLocaleString('vi-VN')} VND <br> Tiền ăn: ${food.toLocaleString('vi-VN')} VND <br> Hao mòn xe: ${haoMon.toLocaleString('vi-VN')} VND <br> Chi phí khác: ${other.toLocaleString('vi-VN')} VND`;
-    }
     
     return total;
 }
