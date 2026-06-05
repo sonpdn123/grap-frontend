@@ -252,3 +252,55 @@ button.danger {
     color: #dc3545;
     font-weight: bold;
 }
+.bg-red {
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+}
+
+.bg-blue {
+    background-color: #cce5ff !important;
+    border-color: #b8daff !important;
+}
+
+input[readonly] {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.action-modal {
+    z-index: 1001;
+}
+
+.action-modal-content {
+    max-width: 320px;
+    margin-top: 40%;
+}
+
+.action-modal-content h3 {
+    margin-bottom: 12px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.action-modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn-edit {
+    background-color: #007bff;
+}
+
+.btn-add {
+    background-color: #28a745;
+}
+
+.btn-cancel {
+    width: 100%;
+    margin-top: 10px;
+    background-color: #6c757d;
+}

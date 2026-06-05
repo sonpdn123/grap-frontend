@@ -20,7 +20,7 @@
         </div>
 
         <div class="calendar-header">
-            <div>CN</div><div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div>
+            <div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div><div>CN</div>
         </div>
         
         <div class="calendar-grid" id="calendarGrid"></div>
@@ -33,29 +33,44 @@
             <form id="incomeForm">
                 <input type="hidden" id="selectedDate">
                 
+                <div class="action-buttons">
+                    <button type="submit" id="saveBtn">Lưu</button>
+                    <button type="button" id="deleteBtn" class="danger">Xóa</button>
+                </div>
+
                 <div class="form-group">
                     <label for="grabIncome">Tiền từ app Grab:</label>
-                    <input type="number" id="grabIncome" value="0" min="0">
+                    <input type="number" id="grabIncome" value="0" min="0" readonly>
                 </div>
                 
                 <div class="form-group">
                     <label for="outsideIncome">Tiền từ cuốc ngoài:</label>
-                    <input type="number" id="outsideIncome" value="0" min="0">
+                    <input type="number" id="outsideIncome" value="0" min="0" readonly>
                 </div>
                 
                 <div class="form-group">
                     <label for="tipIncome">Tiền được bo:</label>
-                    <input type="number" id="tipIncome" value="0" min="0">
+                    <input type="number" id="tipIncome" value="0" min="0" readonly>
                 </div>
                 
                 <div class="form-group">
                     <label for="gasExpense">Tiền xăng:</label>
-                    <input type="number" id="gasExpense" value="0" min="0">
+                    <input type="number" id="gasExpense" value="0" min="0" readonly>
                 </div>
                 
                 <div class="form-group">
                     <label for="foodExpense">Tiền ăn, uống:</label>
-                    <input type="number" id="foodExpense" value="0" min="0">
+                    <input type="number" id="foodExpense" value="0" min="0" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="haoMonExpense">Chi phí hao mòn xe:</label>
+                    <input type="number" id="haoMonExpense" value="0" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="otherExpense">Chi phí khác:</label>
+                    <input type="number" id="otherExpense" value="0" readonly>
                 </div>
                 
                 <div class="result-box">
@@ -63,20 +78,25 @@
                 </div>
 
                 <div id="dailyExpense" class="result-box daily-expense-box"></div>
-                
-                <div class="action-buttons">
-                    <button type="submit" id="saveBtn">Lưu</button>
-                    <button type="button" id="deleteBtn" class="danger">XÓa</button>
-                </div>
-                <div class="form-group">
-                    <label for="haoMonExpense">Chi phí hao mòn xe:</label>
-                    <input type="number" id="haoMonExpense" value="0">
-                </div>
             </form>
         </div>
     </div>
+
+    <div id="inputActionModal" class="modal action-modal">
+        <div class="modal-content action-modal-content">
+            <h3 id="inputActionTitle"></h3>
+            <input type="number" id="quickInput" placeholder="Nhập số tiền...">
+            <div class="action-buttons">
+                <button type="button" id="btnChinhSua" class="btn-edit">Chỉnh sửa</button>
+                <button type="button" id="btnCongThem" class="btn-add">Cộng thêm</button>
+            </div>
+            <button type="button" id="closeInputAction" class="btn-cancel">Hủy</button>
+        </div>
+    </div>
+
     <div id="monthlyTotalDisplay" class="monthly-total"></div>
     <div id="monthlyExpenseDisplay" class="monthly-expense"></div>
+    
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {
     "name": "PVS",
-    "short_name": "Grab",
+    "short_name": "PVS",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#f4f4f9",
@@ -13,7 +13,7 @@
       },
       {
         "src": "icon-512.png",
-        "sizes": "512x512",
+        "sizes": "1024x512",
         "type": "image/png"
       }
     ]

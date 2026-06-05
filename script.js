@@ -8,16 +8,25 @@ const monthlyTotalDisplay = document.getElementById('monthlyTotalDisplay');
 const dailyExpenseDisplay = document.getElementById('dailyExpense');
 const monthlyExpenseDisplay = document.getElementById('monthlyExpenseDisplay');
 
+const inputActionModal = document.getElementById('inputActionModal');
+const inputActionTitle = document.getElementById('inputActionTitle');
+const quickInput = document.getElementById('quickInput');
+const btnChinhSua = document.getElementById('btnChinhSua');
+const btnCongThem = document.getElementById('btnCongThem');
+const closeInputAction = document.getElementById('closeInputAction');
+
 const inputs = {
     grab: document.getElementById('grabIncome'),
     outside: document.getElementById('outsideIncome'),
     tip: document.getElementById('tipIncome'),
     gas: document.getElementById('gasExpense'),
     food: document.getElementById('foodExpense'),
-    haoMon: document.getElementById('haoMonExpense')
+    haoMon: document.getElementById('haoMonExpense'),
+    other: document.getElementById('otherExpense')
 };
 
 let currentDate = new Date();
+let currentActiveInput = null;
 
 const API_URL = 'https://thongke-vkkp.onrender.com';
 
@@ -57,9 +66,12 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     let monthlyGas = 0;
     let monthlyFood = 0;
     let monthlyHaoMon = 0;
+    let monthlyOther = 0;
     const currentMonthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
 
-    for (let i = 0; i < firstDay; i++) {
+    const startDay = firstDay === 0 ? 6 : firstDay - 1;
+
+    for (let i = 0; i < startDay; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'day-cell empty';
         calendarGrid.appendChild(emptyCell);
@@ -73,19 +85,29 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
         if (db[dateString]) {
-            dayCell.classList.add('has-data');
+            const total = db[dateString].total;
+            const cellDate = new Date(year, month, day);
+            const cellDayOfWeek = cellDate.getDay(); 
+
+            if (cellDayOfWeek === 0 || cellDayOfWeek === 6) {
+                if (total >= 700000) dayCell.classList.add('bg-red');
+                else dayCell.classList.add('bg-blue');
+            } else {
+                if (total >= 500000) dayCell.classList.add('bg-red');
+                else dayCell.classList.add('bg-blue');
+            }
+
             const incomeDiv = document.createElement('div');
             incomeDiv.className = 'day-income';
-            
-            incomeDiv.textContent = db[dateString].total.toLocaleString('vi-VN');
-            
+            incomeDiv.textContent = total.toLocaleString('vi-VN');
             dayCell.appendChild(incomeDiv);
 
             if (dateString.startsWith(currentMonthPrefix)) {
-                monthlyTotal += db[dateString].total;
+                monthlyTotal += total;
                 monthlyGas += (db[dateString].gas || 0);
                 monthlyFood += (db[dateString].food || 0);
                 monthlyHaoMon += (db[dateString].hao_mon || 0);
+                monthlyOther += (db[dateString].other_expense || 0);
             }
         }
 
@@ -99,7 +121,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
-        monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span>`;
+        monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span><br>Chi phí khác tháng: <span class="expense-highlight">${monthlyOther.toLocaleString('vi-VN')} VND</span>`;
     }
 }
 
@@ -128,21 +150,51 @@ function calculateTotal() {
     const gas = Number(inputs.gas.value) || 0;
     const food = Number(inputs.food.value) || 0;
     const haoMon = Number(inputs.haoMon.value) || 0;
+    const other = Number(inputs.other.value) || 0;
 
-    const expense = gas + food + haoMon;
+    const expense = gas + food + haoMon + other;
     const total = (grab + tip + outside) - expense;
     
     dailyTotalDisplay.textContent = total.toLocaleString('vi-VN'); 
     
     if (dailyExpenseDisplay) {
-        dailyExpenseDisplay.innerHTML = `Tiền xăng: ${gas.toLocaleString('vi-VN')} VND <br> Tiền ăn: ${food.toLocaleString('vi-VN')} VND <br> Hao mòn xe: ${haoMon.toLocaleString('vi-VN')} VND`;
+        dailyExpenseDisplay.innerHTML = `Tiền xăng: ${gas.toLocaleString('vi-VN')} VND <br> Tiền ăn: ${food.toLocaleString('vi-VN')} VND <br> Hao mòn xe: ${haoMon.toLocaleString('vi-VN')} VND <br> Chi phí khác: ${other.toLocaleString('vi-VN')} VND`;
     }
     
     return total;
 }
 
 Object.values(inputs).forEach(input => {
-    input.addEventListener('input', calculateTotal);
+    input.addEventListener('click', (e) => {
+        currentActiveInput = e.target;
+        const label = e.target.previousElementSibling.textContent;
+        inputActionTitle.textContent = label;
+        quickInput.value = '';
+        inputActionModal.style.display = 'block';
+        quickInput.focus();
+    });
+});
+
+btnChinhSua.addEventListener('click', () => {
+    if (currentActiveInput) {
+        currentActiveInput.value = Number(quickInput.value) || 0;
+        calculateTotal();
+    }
+    inputActionModal.style.display = 'none';
+});
+
+btnCongThem.addEventListener('click', () => {
+    if (currentActiveInput) {
+        const currentVal = Number(currentActiveInput.value) || 0;
+        const addVal = Number(quickInput.value) || 0;
+        currentActiveInput.value = currentVal + addVal;
+        calculateTotal();
+    }
+    inputActionModal.style.display = 'none';
+});
+
+closeInputAction.addEventListener('click', () => {
+    inputActionModal.style.display = 'none';
 });
 
 function openModal(dateString, existingData) {
@@ -156,6 +208,7 @@ function openModal(dateString, existingData) {
         inputs.gas.value = existingData.gas || 0;
         inputs.food.value = existingData.food || 0;
         inputs.haoMon.value = existingData.hao_mon || 0;
+        inputs.other.value = existingData.other_expense || 0;
     } else {
         form.reset();
         Object.values(inputs).forEach(input => input.value = 0);
@@ -180,6 +233,7 @@ form.addEventListener('submit', async function(e) {
     const gas = Number(inputs.gas.value) || 0;
     const food = Number(inputs.food.value) || 0;
     const haoMon = Number(inputs.haoMon.value) || 0;
+    const other = Number(inputs.other.value) || 0;
     
     const requestData = {
         record_date: dateString,
@@ -189,6 +243,7 @@ form.addEventListener('submit', async function(e) {
         gas: gas,
         food: food,
         hao_mon: haoMon,
+        other_expense: other,
         total: total
     };
     
