@@ -261,26 +261,6 @@ form.addEventListener('submit', async function(e) {
     }
 });
 
-document.getElementById('deleteBtn').addEventListener('click', async function() {
-    const dateString = document.getElementById('selectedDate').value;
-    
-    const currentCache = getDatabaseFromCache();
-    delete currentCache[dateString];
-    localStorage.setItem('grab_cache_db', JSON.stringify(currentCache));
-    
-    modal.style.display = 'none';
-    renderCalendar(currentDate); 
-
-    try {
-        await fetch(`${API_URL}/api/income/${dateString}`, {
-            method: 'DELETE'
-        });
-        getDatabaseFromServer();
-    } catch (error) {
-        console.error("Loi khi xoa du lieu:", error);
-    }
-});
-
 document.getElementById('prevMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
     renderCalendar(currentDate);
