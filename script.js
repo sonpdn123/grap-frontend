@@ -49,7 +49,6 @@ async function getDatabaseFromServer() {
         localStorage.setItem('grab_cache_db', JSON.stringify(db));
         return db;
     } catch (error) {
-        console.error("Loi khi lay du lieu:", error);
         return null;
     }
 }
@@ -121,10 +120,10 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     }
 
     if (monthlyGrossDisplay) {
-        monthlyGrossDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1} : <span class="money-highlight">${monthlyGross.toLocaleString('vi-VN')} VND</span>`;
+        monthlyGrossDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1} (chưa trừ chi phí): <span class="money-highlight">${monthlyGross.toLocaleString('vi-VN')} VND</span>`;
     }
 
-    monthlyTotalDisplay.innerHTML = `Tổng thu nhập <span class="money-highlight">RÒNG</span> tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
+    monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
         monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span><br>Chi phí khác tháng: <span class="expense-highlight">${monthlyOther.toLocaleString('vi-VN')} VND</span>`;
@@ -227,6 +226,11 @@ closeModal.addEventListener('click', () => {
 form.addEventListener('submit', async function(e) {
     e.preventDefault(); 
     
+    const saveBtn = document.getElementById('saveBtn');
+    const originalText = saveBtn.textContent;
+    saveBtn.textContent = 'Đang lưu...';
+    saveBtn.disabled = true;
+
     const dateString = document.getElementById('selectedDate').value;
     const total = calculateTotal();
     const grab = Number(inputs.grab.value) || 0;
@@ -249,22 +253,25 @@ form.addEventListener('submit', async function(e) {
         total: total
     };
     
-    const currentCache = getDatabaseFromCache();
-    currentCache[dateString] = requestData;
-    localStorage.setItem('grab_cache_db', JSON.stringify(currentCache));
-    
-    modal.style.display = 'none';
-    renderCalendar(currentDate); 
-    
     try {
         await fetch(`${API_URL}/api/income`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestData)
         });
-        getDatabaseFromServer(); 
+        
+        const currentCache = getDatabaseFromCache();
+        currentCache[dateString] = requestData;
+        localStorage.setItem('grab_cache_db', JSON.stringify(currentCache));
+        
+        await getDatabaseFromServer(); 
     } catch (error) {
-        console.error("Loi khi luu du lieu:", error);
+        alert("Lỗi mạng! Dữ liệu chưa được lưu.");
+    } finally {
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+        modal.style.display = 'none';
+        renderCalendar(currentDate); 
     }
 });
 
