@@ -351,3 +351,14 @@ input[readonly] {
     box-sizing: border-box;
     margin-top: 4px;
 }
+.monthly-gross {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #1b5e20;
+    background-color: #e8f5e9;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+    border: 1px solid #c8e6c9;
+}

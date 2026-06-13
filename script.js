@@ -4,6 +4,7 @@ const modal = document.getElementById('dataModal');
 const closeModal = document.getElementById('closeModal');
 const form = document.getElementById('incomeForm');
 const dailyTotalDisplay = document.getElementById('dailyTotal');
+const monthlyGrossDisplay = document.getElementById('monthlyGrossDisplay');
 const monthlyTotalDisplay = document.getElementById('monthlyTotalDisplay');
 const monthlyExpenseDisplay = document.getElementById('monthlyExpenseDisplay');
 
@@ -61,6 +62,7 @@ function getDatabaseFromCache() {
 function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     calendarGrid.innerHTML = '';
     
+    let monthlyGross = 0;
     let monthlyTotal = 0;
     let monthlyGas = 0;
     let monthlyFood = 0;
@@ -102,6 +104,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
             dayCell.appendChild(incomeDiv);
 
             if (dateString.startsWith(currentMonthPrefix)) {
+                monthlyGross += ((db[dateString].grab || 0) + (db[dateString].outside || 0) + (db[dateString].tip || 0));
                 monthlyTotal += total;
                 monthlyGas += (db[dateString].gas || 0);
                 monthlyFood += (db[dateString].food || 0);
@@ -117,7 +120,11 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
         calendarGrid.appendChild(dayCell);
     }
 
-    monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
+    if (monthlyGrossDisplay) {
+        monthlyGrossDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1} : <span class="money-highlight">${monthlyGross.toLocaleString('vi-VN')} VND</span>`;
+    }
+
+    monthlyTotalDisplay.innerHTML = `Tổng thu nhập <span class="money-highlight">RÒNG</span> tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
         monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span><br>Chi phí khác tháng: <span class="expense-highlight">${monthlyOther.toLocaleString('vi-VN')} VND</span>`;
