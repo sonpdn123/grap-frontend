@@ -120,10 +120,10 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     }
 
     if (monthlyGrossDisplay) {
-        monthlyGrossDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1} (chưa trừ chi phí): <span class="money-highlight">${monthlyGross.toLocaleString('vi-VN')} VND</span>`;
+        monthlyGrossDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1} : <span class="money-highlight">${monthlyGross.toLocaleString('vi-VN')} VND</span>`;
     }
 
-    monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
+    monthlyTotalDisplay.innerHTML = `Tổng thu nhập  <span class="money-highlight">RÒNG</span> tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
         monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span><br>Chi phí khác tháng: <span class="expense-highlight">${monthlyOther.toLocaleString('vi-VN')} VND</span>`;
@@ -254,24 +254,29 @@ form.addEventListener('submit', async function(e) {
     };
     
     try {
-        await fetch(`${API_URL}/api/income`, {
+        const response = await fetch(`${API_URL}/api/income`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestData)
         });
-        
-        const currentCache = getDatabaseFromCache();
-        currentCache[dateString] = requestData;
-        localStorage.setItem('grab_cache_db', JSON.stringify(currentCache));
-        
-        await getDatabaseFromServer(); 
+
+        if (response.ok) {
+            const currentCache = getDatabaseFromCache();
+            currentCache[dateString] = requestData;
+            localStorage.setItem('grab_cache_db', JSON.stringify(currentCache));
+            
+            alert('Lưu thành công');
+            modal.style.display = 'none';
+            await renderCalendar(currentDate);
+        } else {
+            alert('Lưu thất bại từ máy chủ');
+        }
     } catch (error) {
-        alert("Lỗi mạng! Dữ liệu chưa được lưu.");
+        console.error("Loi khi luu:", error);
+        alert('Lỗi kết nối mạng, vui lòng kiểm tra lại');
     } finally {
         saveBtn.textContent = originalText;
         saveBtn.disabled = false;
-        modal.style.display = 'none';
-        renderCalendar(currentDate); 
     }
 });
 
