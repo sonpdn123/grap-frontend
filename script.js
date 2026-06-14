@@ -7,6 +7,7 @@ const dailyTotalDisplay = document.getElementById('dailyTotal');
 const monthlyGrossDisplay = document.getElementById('monthlyGrossDisplay');
 const monthlyTotalDisplay = document.getElementById('monthlyTotalDisplay');
 const monthlyExpenseDisplay = document.getElementById('monthlyExpenseDisplay');
+const loadingOverlay = document.getElementById('loadingOverlay');
 
 const inputActionModal = document.getElementById('inputActionModal');
 const inputActionTitle = document.getElementById('inputActionTitle');
@@ -34,14 +35,22 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js');
 }
 
-async function getDatabaseFromServer() {
+function showLoading() {
+    loadingOverlay.style.display = 'flex';
+}
+
+function hideLoading() {
+    loadingOverlay.style.display = 'none';
+}
+
+async function getDatabaseFromServer(year, month) {
     try {
-        const response = await fetch(`${API_URL}/api/income`, {
+        const response = await fetch(`${API_URL}/api/income?year=${year}&month=${month}`, {
             cache: 'no-store'
         });
         const data = await response.json();
         
-        const db = {};
+        const db = getDatabaseFromCache();
         data.forEach(item => {
             db[item.record_date] = item;
         });
@@ -120,10 +129,10 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     }
 
     if (monthlyGrossDisplay) {
-        monthlyGrossDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1} : <span class="money-highlight">${monthlyGross.toLocaleString('vi-VN')} VND</span>`;
+        monthlyGrossDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1} (chưa trừ chi phí): <span class="money-highlight">${monthlyGross.toLocaleString('vi-VN')} VND</span>`;
     }
 
-    monthlyTotalDisplay.innerHTML = `Tổng thu nhập  <span class="money-highlight">RÒNG</span> tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
+    monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
         monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span><br>Chi phí khác tháng: <span class="expense-highlight">${monthlyOther.toLocaleString('vi-VN')} VND</span>`;
@@ -131,6 +140,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
 }
 
 async function renderCalendar(date) {
+    showLoading();
     const year = date.getFullYear();
     const month = date.getMonth();
     
@@ -142,10 +152,11 @@ async function renderCalendar(date) {
     const cachedDb = getDatabaseFromCache();
     drawCalendarCells(cachedDb, year, month, daysInMonth, firstDay);
     
-    const freshDb = await getDatabaseFromServer();
+    const freshDb = await getDatabaseFromServer(year, month + 1);
     if (freshDb) {
         drawCalendarCells(freshDb, year, month, daysInMonth, firstDay);
     }
+    hideLoading();
 }
 
 function calculateTotal() {
@@ -230,6 +241,7 @@ form.addEventListener('submit', async function(e) {
     const originalText = saveBtn.textContent;
     saveBtn.textContent = 'Đang lưu...';
     saveBtn.disabled = true;
+    showLoading();
 
     const dateString = document.getElementById('selectedDate').value;
     const total = calculateTotal();
@@ -265,18 +277,17 @@ form.addEventListener('submit', async function(e) {
             currentCache[dateString] = requestData;
             localStorage.setItem('grab_cache_db', JSON.stringify(currentCache));
             
-            alert('Lưu thành công');
             modal.style.display = 'none';
             await renderCalendar(currentDate);
         } else {
             alert('Lưu thất bại từ máy chủ');
         }
     } catch (error) {
-        console.error("Loi khi luu:", error);
         alert('Lỗi kết nối mạng, vui lòng kiểm tra lại');
     } finally {
         saveBtn.textContent = originalText;
         saveBtn.disabled = false;
+        hideLoading();
     }
 });
 
