@@ -112,8 +112,13 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
             dayCell.appendChild(incomeDiv);
 
             if (dateString.startsWith(currentMonthPrefix)) {
-                monthlyGross += ((db[dateString].grab || 0) + (db[dateString].outside || 0) + (db[dateString].tip || 0));
-                monthlyTotal += (total - (db[dateString].hao_mon || 0) - (db[dateString].other_expense || 0));
+                // Tính toán độc lập để không bị dính lỗi double-trừ từ dữ liệu cũ
+                const grossDay = (db[dateString].grab || 0) + (db[dateString].outside || 0) + (db[dateString].tip || 0);
+                const expenseDay = (db[dateString].gas || 0) + (db[dateString].food || 0) + (db[dateString].hao_mon || 0) + (db[dateString].other_expense || 0);
+                
+                monthlyGross += grossDay;
+                monthlyTotal += (grossDay - expenseDay); // Tổng thực nhận của tháng sẽ chuẩn xác 100%
+                
                 monthlyGas += (db[dateString].gas || 0);
                 monthlyFood += (db[dateString].food || 0);
                 monthlyHaoMon += (db[dateString].hao_mon || 0);
@@ -135,7 +140,6 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
-        // Cộng tổng 4 loại chi phí lại
         const totalMonthlyExpense = monthlyGas + monthlyFood + monthlyHaoMon + monthlyOther;
         
         monthlyExpenseDisplay.innerHTML = `
