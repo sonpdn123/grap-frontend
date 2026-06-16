@@ -168,7 +168,7 @@ function calculateTotal() {
     const haoMon = Number(inputs.haoMon.value) || 0;
     const other = Number(inputs.other.value) || 0;
 
-    const expense = gas + food + haoMon + other;
+    const expense = gas + food;
     const total = (grab + tip + outside) - expense;
     
     dailyTotalDisplay.textContent = total.toLocaleString('vi-VN'); 
