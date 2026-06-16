@@ -135,7 +135,17 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     monthlyTotalDisplay.innerHTML = `Tổng thu nhập tháng ${month + 1}: <span class="money-highlight">${monthlyTotal.toLocaleString('vi-VN')} VND</span>`;
     
     if (monthlyExpenseDisplay) {
-        monthlyExpenseDisplay.innerHTML = `Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span><br>Chi phí khác tháng: <span class="expense-highlight">${monthlyOther.toLocaleString('vi-VN')} VND</span>`;
+        // Cộng tổng 4 loại chi phí lại
+        const totalMonthlyExpense = monthlyGas + monthlyFood + monthlyHaoMon + monthlyOther;
+        
+        monthlyExpenseDisplay.innerHTML = `
+            <strong>Tổng chi phí tháng: <span class="expense-highlight" style="color:#d32f2f; font-size:18px;">${totalMonthlyExpense.toLocaleString('vi-VN')} VND</span></strong>
+            <br>-----------------------------------<br>
+            Tiền xăng tháng: <span class="expense-highlight">${monthlyGas.toLocaleString('vi-VN')} VND</span><br>
+            Tiền ăn tháng: <span class="expense-highlight">${monthlyFood.toLocaleString('vi-VN')} VND</span><br>
+            Hao mòn xe tháng: <span class="expense-highlight">${monthlyHaoMon.toLocaleString('vi-VN')} VND</span><br>
+            Chi phí khác tháng: <span class="expense-highlight">${monthlyOther.toLocaleString('vi-VN')} VND</span>
+        `;
     }
 }
 
