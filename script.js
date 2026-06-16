@@ -113,7 +113,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
 
             if (dateString.startsWith(currentMonthPrefix)) {
                 monthlyGross += ((db[dateString].grab || 0) + (db[dateString].outside || 0) + (db[dateString].tip || 0));
-                monthlyTotal += total;
+                monthlyTotal += (total - (db[dateString].hao_mon || 0) - (db[dateString].other_expense || 0));
                 monthlyGas += (db[dateString].gas || 0);
                 monthlyFood += (db[dateString].food || 0);
                 monthlyHaoMon += (db[dateString].hao_mon || 0);
@@ -165,8 +165,6 @@ function calculateTotal() {
     const tip = Number(inputs.tip.value) || 0;
     const gas = Number(inputs.gas.value) || 0;
     const food = Number(inputs.food.value) || 0;
-    const haoMon = Number(inputs.haoMon.value) || 0;
-    const other = Number(inputs.other.value) || 0;
 
     const expense = gas + food;
     const total = (grab + tip + outside) - expense;
