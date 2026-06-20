@@ -513,3 +513,75 @@ input[readonly] {
     background-color: #ecca32;
     color: #c53030;
 }
+/* --- SỬA LỖI TRÀN LƯỚI CHO CẢ DESKTOP VÀ MOBILE --- */
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    /* minmax(0, 1fr) ép buộc các cột phải co lại bằng đúng khung chứa, không tự phình ra */
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 15px;
+}
+
+/* --- CẤU HÌNH ĐÁP ỨNG DI ĐỘNG (RESPONSIVE FOR MOBILE) --- */
+
+@media (max-width: 480px) {
+    /* Thu nhỏ khoảng cách lề của toàn bộ ứng dụng */
+    .container {
+        padding: 10px;
+        margin: 5px auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Thu nhỏ khoảng cách giữa các ô lịch */
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    /* Cấu hình lại ô lịch nhỏ gọn hơn */
+    .day-cell {
+        padding: 4px 2px;
+        min-height: 62px;
+        border-radius: 4px;
+    }
+
+    /* Thu nhỏ box chứa số ngày */
+    .day-number {
+        padding: 1px 4px;
+        font-size: 10px;
+        margin-bottom: 2px;
+        border-radius: 3px;
+    }
+
+    /* Hạ size chữ phần hiển thị số tiền để vừa vặn trong ô */
+    .day-gross {
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: -0.5px;
+    }
+
+    .day-income {
+        font-size: 9px;
+        font-weight: 700;
+        padding-top: 2px;
+        margin-top: 2px;
+        letter-spacing: -0.5px;
+    }
+
+    /* Điều chỉnh thanh chuyển đổi tháng */
+    .calendar-controls h2 {
+        font-size: 16px;
+    }
+    
+    .calendar-controls button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}
