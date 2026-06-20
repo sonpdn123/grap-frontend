@@ -89,7 +89,11 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     for (let day = 1; day <= daysInMonth; day++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'day-cell';
-        dayCell.textContent = day;
+        
+        const dayNumberSpan = document.createElement('span');
+        dayNumberSpan.className = 'day-number';
+        dayNumberSpan.textContent = day;
+        dayCell.appendChild(dayNumberSpan);
         
         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
@@ -97,6 +101,8 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
             const total = db[dateString].total;
             const cellDate = new Date(year, month, day);
             const cellDayOfWeek = cellDate.getDay(); 
+            
+            const grossDay = (db[dateString].grab || 0) + (db[dateString].outside || 0) + (db[dateString].tip || 0);
 
             if (cellDayOfWeek === 0 || cellDayOfWeek === 6) {
                 if (total >= 700000) dayCell.classList.add('bg-red');
@@ -106,18 +112,21 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
                 else dayCell.classList.add('bg-blue');
             }
 
+            const grossDiv = document.createElement('div');
+            grossDiv.className = 'day-gross';
+            grossDiv.textContent = grossDay.toLocaleString('vi-VN');
+            dayCell.appendChild(grossDiv);
+
             const incomeDiv = document.createElement('div');
             incomeDiv.className = 'day-income';
             incomeDiv.textContent = total.toLocaleString('vi-VN');
             dayCell.appendChild(incomeDiv);
 
             if (dateString.startsWith(currentMonthPrefix)) {
-                // Tính toán độc lập để không bị dính lỗi double-trừ từ dữ liệu cũ
-                const grossDay = (db[dateString].grab || 0) + (db[dateString].outside || 0) + (db[dateString].tip || 0);
                 const expenseDay = (db[dateString].gas || 0) + (db[dateString].food || 0) + (db[dateString].hao_mon || 0) + (db[dateString].other_expense || 0);
                 
                 monthlyGross += grossDay;
-                monthlyTotal += (grossDay - expenseDay); // Tổng thực nhận của tháng sẽ chuẩn xác 100%
+                monthlyTotal += (grossDay - expenseDay); 
                 
                 monthlyGas += (db[dateString].gas || 0);
                 monthlyFood += (db[dateString].food || 0);

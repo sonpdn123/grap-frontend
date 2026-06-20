@@ -388,3 +388,128 @@ input[readonly] {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+/* --- Cấu trúc lại lưới lịch --- */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* --- Cấu trúc thẻ ngày --- */
+.day-cell {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px;
+    min-height: 95px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+    /* Định dạng cho số ngày (Node văn bản mặc định trong ô) */
+    font-size: 14px;
+    font-weight: 700;
+    color: #4a5568;
+    text-align: left;
+}
+
+
+
+/* Ô trống của tháng cũ/mới */
+.day-cell.empty {
+    background-color: #f7fafc;
+    border: 1px dashed #cbd5e0;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* --- Định dạng chung cho dữ liệu tiền tệ trong ngày --- */
+.day-gross, .day-income {
+    text-align: right;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Doanh thu chưa trừ chi phí (Nằm ở trên) */
+.day-gross {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-top: auto; /* Đẩy khối này xuống sát phần đáy của ô số ngày */
+    padding-bottom: 2px;
+}
+
+/* Thu nhập thực nhận sau khi trừ chi phí (Nằm ở dưới) */
+.day-income {
+    font-size: 12px;
+    font-weight: 700;
+    padding-top: 4px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06); /* Đường kẻ phân cách mờ giữa 2 loại tiền */
+}
+
+/* --- Màu sắc động theo trạng thái đạt chỉ tiêu --- */
+/* Trạng thái bình thường / Chưa đạt chỉ tiêu cao */
+.day-cell.bg-blue {
+    background-color: #ebf8ff;
+    border-color: #bee3f8;
+}
+.day-cell.bg-blue:hover {
+    border-color: #90cdf4;
+}
+.day-cell.bg-blue .day-income {
+    color: #2b6cb0;
+}
+
+/* Trạng thái đạt doanh thu cao (Ngày thường >= 500k, Cuối tuần >= 700k) */
+.day-cell.bg-red {
+    background-color: #fff5f5;
+    border-color: #fed7d7;
+}
+.day-cell.bg-red:hover {
+    border-color: #feb2b2;
+}
+.day-cell.bg-red .day-income {
+    color: #c53030;
+}
+.day-cell {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.day-number {
+    background-color: #edf2f7;
+    color: #4a5568;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+    width: fit-content;
+    margin-bottom: 6px;
+}
+
+.day-cell.bg-blue .day-number {
+    background-color: #ecea65;
+    color: #2b6cb0;
+}
+
+.day-cell.bg-red .day-number {
+    background-color: #ecca32;
+    color: #c53030;
+}
