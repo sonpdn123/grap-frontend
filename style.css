@@ -548,7 +548,7 @@ input[readonly] {
     /* Cấu hình lại ô lịch nhỏ gọn hơn */
     .day-cell {
         padding: 4px 2px;
-        min-height: 62px;
+        min-height: 58px;
         border-radius: 4px;
     }
 
