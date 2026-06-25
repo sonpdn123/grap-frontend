@@ -89,11 +89,7 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
     for (let day = 1; day <= daysInMonth; day++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'day-cell';
-        
-        const dayNumberSpan = document.createElement('span');
-        dayNumberSpan.className = 'day-number';
-        dayNumberSpan.textContent = day;
-        dayCell.appendChild(dayNumberSpan);
+        dayCell.textContent = day;
         
         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
@@ -123,7 +119,12 @@ function drawCalendarCells(db, year, month, daysInMonth, firstDay) {
             dayCell.appendChild(incomeDiv);
 
             if (dateString.startsWith(currentMonthPrefix)) {
-                const expenseDay = (db[dateString].gas || 0) + (db[dateString].food || 0) + (db[dateString].hao_mon || 0) + (db[dateString].other_expense || 0);
+                const gasVal = document.getElementById('chkGas').checked ? (db[dateString].gas || 0) : 0;
+                const foodVal = document.getElementById('chkFood').checked ? (db[dateString].food || 0) : 0;
+                const haoMonVal = document.getElementById('chkHaoMon').checked ? (db[dateString].hao_mon || 0) : 0;
+                const otherVal = document.getElementById('chkOther').checked ? (db[dateString].other_expense || 0) : 0;
+
+                const expenseDay = gasVal + foodVal + haoMonVal + otherVal;
                 
                 monthlyGross += grossDay;
                 monthlyTotal += (grossDay - expenseDay); 
@@ -320,6 +321,19 @@ document.getElementById('prevMonth').addEventListener('click', () => {
 document.getElementById('nextMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
     renderCalendar(currentDate);
+});
+
+function updateTotalsOnly() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const cachedDb = getDatabaseFromCache();
+    drawCalendarCells(cachedDb, year, month, daysInMonth, firstDay);
+}
+
+['chkGas', 'chkFood', 'chkHaoMon', 'chkOther'].forEach(id => {
+    document.getElementById(id).addEventListener('change', updateTotalsOnly);
 });
 
 renderCalendar(currentDate);

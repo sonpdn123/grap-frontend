@@ -15,7 +15,7 @@
     </div>
 
     <div class="container">
-       
+        <h1>Thu nhập PS</h1>
         
         <div class="calendar-controls">
             <button id="prevMonth">Tháng trước</button>
@@ -30,6 +30,17 @@
         <div class="calendar-grid" id="calendarGrid"></div>
 
         <div id="monthlyGrossDisplay" class="monthly-gross"></div>
+        
+        <details class="expense-select-details">
+            <summary>Tùy chọn loại trừ chi phí</summary>
+            <div class="expense-checkbox-group">
+                <label><input type="checkbox" id="chkGas" checked> Tiền xăng</label>
+                <label><input type="checkbox" id="chkFood" checked> Tiền ăn, uống</label>
+                <label><input type="checkbox" id="chkHaoMon" checked> Chi phí hao mòn xe</label>
+                <label><input type="checkbox" id="chkOther" checked> Chi phí khác</label>
+            </div>
+        </details>
+
         <div id="monthlyTotalDisplay" class="monthly-total"></div>
         <div id="monthlyExpenseDisplay" class="monthly-expense"></div>
     </div>
